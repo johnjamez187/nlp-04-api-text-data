@@ -1,6 +1,6 @@
 """stage01_extract.py - Stage 01: Extract.
 
-NO EDITS REQUIRED IN THIS FILE (if paths have not changed.)
+CUSTOMIZED: Extract 2024 Kansas City Chiefs player statistics.
 
 Source: API
 Sink: raw JSON object + raw JSON file
@@ -19,11 +19,14 @@ Notes:
 # Section 1. Setup and Imports
 # ============================================================
 
+from io import StringIO
+import json
 import logging
 from pathlib import Path
 from typing import Any
 
 from datafun_toolkit.logger import log_path
+import polars as pl
 import requests
 
 # ============================================================
@@ -37,7 +40,7 @@ def run_extract(
     raw_json_path: Path,
     LOG: logging.Logger,
 ) -> Any:
-    """Extract JSON data from the API and save it to a file.
+    """Extract NFL CSV data and save Chiefs records as JSON.
 
     Args:
         source_api_url (str): The URL of the API endpoint.
@@ -65,14 +68,36 @@ def run_extract(
     # and raise an exception if the request was unsuccessful.
     response.raise_for_status()
 
-    # Use the .json() method of the response object to parse the JSON content
-    # and store it in a variable called json_data.
-    json_data: Any = response.json()
+    # Read the NFLverse CSV response and convert Chiefs records to JSON.
 
-    # Use the write_text() method of the raw_json_path to
-    # save the raw JSON data to a file.
-    # Specify the encoding as "utf-8" to ensure proper handling of special characters.
-    raw_json_path.write_text(response.text, encoding="utf-8")
+    # ============================================================
+    # CUSTOM MODIFICATION: EXTRACT CHIEFS NFL STATISTICS
+    # ============================================================
+
+    # Read the NFL statistics CSV from the API response.
+    df = pl.read_csv(
+        StringIO(response.text),
+        infer_schema_length=None,
+    )
+
+    # Filter for Kansas City Chiefs players.
+    # Keep Chiefs records that identify an individual player.
+    chiefs_df = df.filter(
+        (pl.col("team") == "KC")
+        & pl.col("player_display_name").is_not_null()
+        & (pl.col("player_display_name").str.strip_chars() != "")
+    )
+
+    # Convert the filtered records into JSON-compatible dictionaries.
+    json_data: Any = chiefs_df.to_dicts()
+    # Save the Chiefs records as JSON for the Validate stage.
+    raw_json_path.write_text(
+        json.dumps(json_data, indent=2),
+        encoding="utf-8",
+    )
+
+    LOG.info(f"Total NFL records retrieved: {df.height}")
+    LOG.info(f"Chiefs player-game records extracted: {chiefs_df.height}")
 
     # Use log.info() to log the source API URL (a string).
     # Use a formatted string (f-string) to include the variable in the log message.
