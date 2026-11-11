@@ -52,11 +52,11 @@
 # ============================================================
 
 [project]
-site_name = "Docs" # CUSTOM: Set the name that appears in the browser tab.
-site_url = "https://denisecase.github.io/nlp-04-api-text-data/"
-repo_url = "https://github.com/denisecase/nlp-04-api-text-data"
-repo_name = "nlp-04-api-text-data"
-site_description = "Project Documentation" # CUSTOM: Set the description.
+site_name = "2024 Kansas City Chiefs EVTL Analysis"
+site_url = "https://johnjamez187.github.io/nlp-04-api-text-data/"
+repo_url = "https://github.com/johnjamez187/nlp-04-api-text-data"
+repo_name = "johnjamez187/nlp-04-api-text-data"
+site_description = "An EVTL pipeline analyzing 2024 Kansas City Chiefs player statistics using Python and Polars."
 docs_dir = "docs" # source directory for documentation markdown files
 site_dir = "site" # output directory for generated site (ignored by Git; not in repo)
 edit_uri = "edit/main/docs/" # "Edit this page" links (GitHub)
@@ -65,7 +65,7 @@ edit_uri = "edit/main/docs/" # "Edit this page" links (GitHub)
 [project.extra]
 # WHY: Social links provide easy access to project repositories and profiles.
 social = [
-    {icon = "fontawesome/brands/github", link = "https://github.com/denisecase/nlp-04-api-text-data" },
+    {icon = "fontawesome/brands/github", link = "https://github.com/johnjamez187/nlp-04-api-text-data" },
 ]
 
 [project.markdown_extensions]
